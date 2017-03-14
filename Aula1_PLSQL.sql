@@ -1,5 +1,5 @@
 set serveroutput on; --Habilita retorno da console do server
-
+--
 DECLARE 
   v_mensagem VARCHAR2(100) := 'Hello World!';
 BEGIN

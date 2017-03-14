@@ -1,6 +1,7 @@
 set serveroutput on; --Habilita retorno da console do server
 
 --Exemplo if
+--
 DECLARE
   v_idade NUMBER;
 BEGIN
