@@ -1,0 +1,93 @@
+create or replace procedure PRC_INSERE_VEICULO
+(
+ p_nr_placa loc_veiculo.nr_placa%type
+,p_cd_proprietario loc_veiculo.cd_proprietario%type
+,p_nr_chassis loc_veiculo.nr_chassis%type
+,p_status loc_veiculo.status%type
+,p_tipo_automovel loc_veiculo.tipo_automovel%type
+,p_km_atual loc_veiculo.km_atual%type
+,p_combustivel loc_veiculo.combustivel%type
+,p_modelo loc_veiculo.modelo%type
+,p_cor loc_veiculo.cor%type
+,p_cd_grupo loc_veiculo.cd_grupo%type
+) is
+begin
+    insert into loc_veiculo (nr_placa,cd_proprietario,nr_chassis,status,tipo_automovel,km_atual,combustivel,modelo,cor,cd_grupo)
+      values (p_nr_placa,p_cd_proprietario,p_nr_chassis,p_status,p_tipo_automovel,p_km_atual,p_combustivel,p_modelo,p_cor,p_cd_grupo);
+    commit;
+exception
+    when dup_val_on_index then
+        prc_log2017_2tdsr(SYS_CONTEXT('USERENV','OS_USER'),sysdate,'Erro ao inserir veículo! Chave '|| p_nr_placa || ' já existe na tabela LOC_VEICULO.');
+        rollback
+        raise_application_error(-20001,'Placa já existe.');
+    when invalid_number then
+        raise_application_error(-20002,'Número inválido.');
+        
+    when value_error then
+        raise_application_error(-20003,'Valor inválido.');
+    when others then
+        raise_application_error(-20004,'Erro inesperado.'||sqlerrm);
+        rollback;
+end;
+
+
+SELECT * FROM LOC_PROPRIETARIO
+P_NR_PLACA        VARCHAR2(7)  IN             
+P_CD_PROPRIETARIO NUMBER(10)   IN             
+P_NR_CHASSIS      VARCHAR2(40) IN             
+P_STATUS          VARCHAR2(1)  IN             
+P_TIPO_AUTOMOVEL  VARCHAR2(4)  IN             
+P_KM_ATUAL        NUMBER(10)   IN             
+P_COMBUSTIVEL     VARCHAR2(10) IN             
+P_MODELO          VARCHAR2(30) IN             
+P_COR             VARCHAR2(15) IN             
+P_CD_GRUPO        NUMBER(3)    IN      
+
+execute PRC_INSERE_VEICULO('ABC0987',1,'AAAAAAA','A','CAR',100000,'GASOLINA','FUSCA','AZUL',3);
+
+
+begin
+    PRC_INSERE_VEICULO('ABC0987',1,'AAAAAAA','A','CAR',100000,'GASOLINA','FUSCA','AZUL',3);
+end;    
+
+SELECT * FROM LOC_VEICULO WHERE NR_PLACA='ABC0987'
+
+
+create table LOG2017_2TDSR
+(
+ID_SEQ		NUMBER PRIMARY KEY,
+OSUSER		VARCHAR2(1000),
+DT_EVENTO	DATE,
+TXT			VARCHAR2(4000)
+);
+
+
+create sequence seq_log2017_2tdsr start with 1 nocache;
+
+select user from dual;
+
+select SYS_CONTEXT('USERENV','OS_USER') from dual;
+
+select SYS_CONTEXT('USERENV','HOST') from dual;
+
+create or replace procedure prc_log2017_2tdsr
+(p_osuser    log2017_2tdsr.osuser%type,
+p_dt_evento log2017_2tdsr.dt_evento%type,
+p_txt       log2017_2tdsr.txt%type)
+is
+    pragma autonomous_transaction;  
+begin
+    insert into log2017_2tdsr(id_seq, osuser, dt_evento, txt)
+     values (seq_log2017_2tdsr.nextval,p_osuser, p_dt_evento, p_txt);
+    commit;
+end;
+
+
+begin
+    PRC_LOG2017_2TDSR(SYS_CONTEXT('USERENV','OS_USER'), sysdate,'Log inserido através da procedure com autonomous_transaction.');
+    ROLLBACK;
+end;
+
+select * from log2017_2tdsr
+
+alter session set nls_date_format='dd/mm/yyyy hh24:mi:ss'

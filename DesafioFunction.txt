@@ -1,0 +1,32 @@
+
+
+Desenvolver uma função que receba o código do funcionário e retorne o nome do superior imediato do funcionário.
+Para este exercício, você aplicará o conceito de auto-relacionamento.
+Obs.: 1 funcionário possui somente um único superior imediato.
+
+Tabela de origem:
+PF0064.LOC_FUNCIONARIO
+
+create or replace function fnc_func_gerente
+(p_cd_func loc_funcionario.cd_func%type)
+return varchar2 is
+	v_nome_gerente varchar2(1000);
+begin
+	select g.nm_func nome_gerente
+	  into v_nome_gerente
+	  from loc_funcionario f, loc_funcionario g
+	 where f.cd_gerente = g.cd_func
+	   and f.cd_func = p_cd_func;
+	   
+	return v_nome_gerente;
+end;
+
+
+
+select g.nm_func nome_gerente
+	  --into v_nome_gerente
+	  from loc_funcionario f, loc_funcionario g
+	 where f.cd_gerente = g.cd_func
+	   	   and f.cd_func = 22;
+
+

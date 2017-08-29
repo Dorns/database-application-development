@@ -1,0 +1,50 @@
+Desenvolva uma função denominada fun_nome_veiculo que vai ter um retorno varchar2. Essa função vai receber como parâmetro a placa do veículo e selecionar as seguintes colunas: Modelo + Cor + e tipo do automóvel. Concatene essas colunas na variável de retorno da função. Caso a placa do veículo não esteja cadastrada, parar o processamento emitindo a seguinte mensagem de erro “Placa <nrplaca> do veículo não está cadastrada. Favor informar um código válido !”. 
+
+Tabela base: PF0064.LOC_VEICULO
+
+create or replace function fun_nome_veiculo
+(p_nr_placa 	loc_veiculo.nr_placa%type)
+return varchar2 is
+	v_resultado	varchar2(1000);
+	v_tipo_automovel	varchar2(1000);
+	v_modelo	varchar2(1000);
+	v_cor	varchar2(1000);
+begin
+	/*select tipo_automovel, modelo, cor
+	  into v_tipo_automovel, v_modelo, v_cor
+	  from pf0064.loc_veiculo
+	 where upper(nr_placa) = upper(p_nr_placa);
+	*/
+	select tipo_automovel || ' ' || modelo || ' ' || cor
+	  into v_resultado
+	  from pf0064.loc_veiculo
+	 where upper(nr_placa) = upper(p_nr_placa);
+	 
+	 return v_resultado;
+exception
+	when no_data_found then
+		raise_application_error(-20001,'Placa '|| p_nr_placa|| ' do veículo não está cadastrada. Favor informar um código válido !');
+	when others then
+		raise_application_error(-20002,'Erro inesperado.' || sqlerrm);
+end;
+
+
+create index idx_nr_placa_upper on loc_veiculo 
+(upper(nr_placa));
+
+
+
+
+
+CREATE TABLE LOC_VEICULO 
+AS SELECT * FROM PF0064.LOC_VEICULO WHERE 1=2;
+
+
+
+Criar uma procedure chamada PRC_INSERE_VEICULO, que realizará inserções na tabela LOC_VEICULO.
+
+
+
+
+
+

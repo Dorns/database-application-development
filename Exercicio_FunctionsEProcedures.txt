@@ -1,0 +1,65 @@
+1) Desenvolver uma function denominada FNC_INICIO_MAI que receberá um nome completo em letras minúsculas e retornará toda primeira letra em maíusculo.
+
+
+
+2) Desenvolver uma function que retorne a quantidade de pedidos do CARLOCA agrupada por ano. Tabela base: PF0064.LOC_PEDIDO_LOCACAO.
+Realize o tratamento de excessão de forma adequada para que nunca retorne um erro ao usuário.
+
+
+
+3) Desenvolver uma function que receba como parâmetro o número da placa e retorne o número do chassi. Caso não encontre o chassi, retornar a mensagem personalizada. "Chassi não encontrado na base de dados."
+
+
+
+
+4) Desenvolver um bloco PL/SQL que copie dados da tabela PF0064.LOC_CLIENTE e insira na tabela CLIENTE_CARLOCA, conforme regras abaixo:
+a- Copiar dados somente dos códigos de cliente entre 1 e 70;
+b- Caso o Tipo de Cliente seja F, inserir Física, caso seja J, Jurídico;
+
+Tratar as exceções conforme tabela abaixo:
+DUP_VAL_ON_INDEX, Imprimir: "Registro || CD_CLIENTE || já existe.", e prosseguir com o próximo registro.
+VALUE_ERROR, Abortar a execução do programa e retornar o erro: Erro de dados || sqlerrm.
+
+
+DDL TABELA:
+
+CREATE TABLE CLIENTE_CARLOCA
+   (	CODIGO NUMBER(8) primary key, 
+	NOME VARCHAR2(50), 
+	TIPO VARCHAR2(50));
+
+
+
+
+
+5) Desenvolver uma procedure que realize a transferência dos registros da tabela PF0064.LOC_PEDIDO_LOCACAO e PF0064.LOC_ITEM_LOCACAO para as respectivas estruturas abaixo:
+
+
+CREATE TABLE LOC_ITEM_LOCACAO
+   (	"DT_RETIRADA" DATE, 
+	"NR_ITEM" NUMBER(5,0) NOT NULL ENABLE, 
+	"DT_ENTREGA" DATE, 
+	"QT_DIAS" NUMBER(3,0), 
+	"VL_LOCACAO" NUMBER(11,2), 
+	"NR_PLACA" VARCHAR2(7 BYTE) NOT NULL ENABLE, 
+	"VL_TOTAL" NUMBER(11,2), 
+	"NR_PEDIDO" NUMBER(8,0) NOT NULL);
+
+ CREATE TABLE LOC_PEDIDO_LOCACAO
+   (	"CD_CLIENTE" NUMBER(8,0) NOT NULL ENABLE, 
+	"NR_PEDIDO" NUMBER(8,0) NOT NULL ENABLE, 
+	"DT_LOCACAO" DATE NOT NULL ENABLE, 
+	"QT_DIAS" NUMBER(5,0), 
+	"VL_TOTAL" NUMBER(10,2), 
+	"STATUS" VARCHAR2(2 BYTE), 
+	"TP_PAGTO" VARCHAR2(2 BYTE), 
+	"DT_RETIRADA" DATE, 
+	"DT_ENTREGA" DATE, 
+	"CD_FUNC" NUMBER(5,0), 
+	"CD_CIDADE" NUMBER(8,0), 
+	"CD_AGENCIA" NUMBER(8,0), 
+	"CD_ESTADO" VARCHAR2(2 BYTE));
+
+Esta procedure deverá realizar o tratamento adequado para que sempre execute sem erros. 
+
+6) Desenvolver uma procedure que realize a conciliação da coluna VL_TOTAL da tabela LOC_PEDIDO_LOCACAO com o subtotal da tabela LOC_ITEM_LOCACAO. 

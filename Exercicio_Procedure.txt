@@ -1,0 +1,43 @@
+ Criar um procedimento de nome prc_elimina_proprietario para eliminar um determinado proprietário na tabela loc_proprietario. Este procedimento recebera como parâmetro a chave primária da tabela. Utilize todos os exceptions necessários para garantir que o tratamento de erro(mensagens) seja gerenciado pela aplicação. 
+ 
+ 
+ 
+ 
+ 
+ 
+
+create or replace procedure prc_elimina_proprietario
+(p_cd_proprietario  loc_proprietario.cd_proprietario%type) is
+   v_cnt_veiculo  number;
+   v_cnt_endereco number;
+   v_erro_registro_existe exception;
+begin
+  select count(1)
+   into v_cnt_veiculo
+   from loc_veiculo
+  where cd_proprietario = p_cd_proprietario;
+  
+  select count(1)
+   into v_cnt_endereco
+   from loc_endereco_proprietario
+  where cd_proprietario = p_cd_proprietario;
+
+  if v_cnt_veiculo>0 or v_cnt_endereco > 0 then
+    raise v_erro_registro_existe;
+  else
+    delete from loc_proprietario 
+     where cd_proprietario=p_cd_proprietario;
+  end if;
+exception
+  when v_erro_registro_existe then
+    raise_application_error (-20001,'Registro(s) filho(s) encontrados.  TABLE LOC_PROPRIETARIO_ENDERECO '|| v_cnt_endereco || ' TABLE LOC_VEICULO '|| v_cnt_veiculo);
+  when others then
+  raise_application_error (-20002,'Erro inesperado.' || sqlerrm);
+end;
+
+
+begin
+PRC_ELIMINA_PROPRIETARIO(1);
+end;
+
+
